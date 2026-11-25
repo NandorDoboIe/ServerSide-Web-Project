@@ -1,0 +1,13 @@
+/*C1*/SET SCHEMA SYSTEM_LOBS
+INSERT INTO BLOCKS VALUES(0,2147483647,0)
+COMMIT
+/*C2*/SET SCHEMA PUBLIC
+create table user(\u000aid integer identity,\u000aname varchar(32) not null,\u000aaddress varchar(32) not null\u000a)
+/*C3*/SET SCHEMA PUBLIC
+INSERT INTO USER VALUES(0,'john','roscommon')
+COMMIT
+INSERT INTO USER VALUES(1,'john','athlone')
+COMMIT
+DISCONNECT
+/*C4*/SET SCHEMA PUBLIC
+DISCONNECT
