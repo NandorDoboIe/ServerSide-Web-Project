@@ -22,12 +22,12 @@ instance;
 
 	}
 	
-	public void save(User u) throws Exception {
+	public void save(User user) throws Exception {
 		Connection c = getConnection();
 		PreparedStatement psmt = c.prepareStatement(
-				"insert into user (name, address) values(?,?)");
-		psmt.setString(1, u.getName());
-		psmt.setString(2, u.getAddress());
+				"insert into user (name, password) values(?,?)");
+		psmt.setString(1, user.getName());
+		psmt.setString(2, user.getPassword());
 		psmt.executeUpdate();
 	}
 	
@@ -39,35 +39,53 @@ instance;
 		users = new ArrayList();
 		while (rs.next()) {
 						
-			User u = new User(rs.getString("name"), rs.getString("address"));
+			User u = new User(rs.getInt("id"), rs.getString("name"), rs.getString("password"));
 			users.add(u);
 		}
 		
 		return users;
 	}
 
-	public void save(User u) throws Exception {
+	public User readSpecificUser(User user) throws Exception{
 		Connection c = getConnection();
-		PreparedStatement psmt = c.prepareStatement(
-				"insert into user (name, address) values(?,?)");
-		psmt.setString(1, u.getName());
-		psmt.setString(2, u.getAddress());
-		psmt.executeUpdate();
+		Statement stmt = c.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT * FROM USER WHERE ID="+user.getId());
+		User newUser = new User(rs.getInt("id"),rs.getString("name"), rs.getString("password"));
+		
+		return newUser;
 	}
 
-	public void save(User u) throws Exception {
+	public boolean delete(User user) throws Exception{
 		Connection c = getConnection();
 		PreparedStatement psmt = c.prepareStatement(
-				"insert into user (name, address) values(?,?)");
-		psmt.setString(1, u.getName());
-		psmt.setString(2, u.getAddress());
+			"DELETE FROM USER WHERE ID="+user.getId()
+		);
 		psmt.executeUpdate();
+
+		int rowsAffected = psmt.executeUpdate();
+
+		if (rowsAffected == 0) {
+			System.out.println("No User with id " + user.getId() + " exists");
+			return false;
+		}
+		return true;
 	}
 
-	public void delete(User u) throws Exception{
-		Connection c = getConnection;
-		PreparedStatement psmt = c.prepareStatement(
-			"DELETE "
-		)
+	public boolean update(User user) throws Exception{
+		readSpecificUser(user);
+		
+		Connection  c = getConnection();
+		PreparedStatement pstm = c.prepareStatement(
+			"UPDATE USER SET name="+ user.getName() +", PASSWORD=" + user.getPassword() +" WHERE ID="+user.getId()
+		);
+		
+
+		int rowsAffected = pstm.executeUpdate();
+
+		if (rowsAffected == 0) {
+			System.out.println("No User with id " + user.getId() + " exists");
+			return false;
+		}
+		return true;
 	}
 }
